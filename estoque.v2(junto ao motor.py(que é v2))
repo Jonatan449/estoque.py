@@ -1,0 +1,74 @@
+from estoque import*
+from rich.panel import Panel
+from rich import print
+from rich.table import Table
+estoque=Panel("""[green]
+    [1]Cadastrar produtos
+    [2]Listar produtos
+    [3]Buscar produtos
+    [4]Alterar quantidade
+    [5]Remover produto
+    [6]Sair[/]""", title="ESTOQUE :package:", style="bright_green", width=30, height=9)
+while True:
+    print(estoque)
+    linha()
+    while True:
+        try:
+           option=int(input(f"{cores['amarelo']}Digite sua escolha: {cores['limpa']}"))
+           while option not in[1,2,3,4,5,6]:
+                  option=int(input("Tente novamente: "))
+           break
+        except:
+           print(f"{cores['vermelho']}ERRO: digite apenas números inteiros\nNão use letras ou números decimais{cores['limpa']}")
+           
+    linha()
+    match option:
+        case 1:
+            cadastrar()
+        case 2:
+           if not produtos:
+                  print("Não há produto cadastrado.")
+           if produtos:
+               tabel=Table(title="Lista de produtos:")
+               tabel.add_column("Nome")
+               tabel.add_column("Preço")
+               tabel.add_column("Quantidade", justify="center")
+               for produto in produtos:
+                   tabel.add_row(produto['nome'], f"R${produto['valor']:g}", f"{produto['quantidade']:g}")
+               print(tabel)
+                  #print(f'{produto["nome"]} — R${produto["valor"]:g} — {produto["quantidade"]} unidades')
+        case 3:
+           buscar()
+        case 4:
+           alt_quant=input("Deseja alterar a quantidade de qual produto: ").strip().casefold()
+           achou=False
+           for produto in produtos:
+                  if produto["nome"].casefold()==alt_quant:
+                         print(f"Sua quantidade atual é {cores["verde"]}{produto['quantidade']}{cores['limpa']}\n")
+                         achou=True
+                         while True:
+                                try:
+                                    novo_numero=int(input("Nova quantidade do produto: "))
+                                    break
+                                except ValueError:
+                                    print(f"{cores['vermelho']}ERRO: digite apenas números inteiros\nNão use letras ou números decimais{cores['limpa']}")
+                         produto["quantidade"]=novo_numero
+                         print(f"{cores["verde"]}Atualizado!\nO produto '{produto["nome"]}' agora\ntem {produto["quantidade"]} unidades{cores["limpa"]}")
+           if not achou:
+                  print(f"{cores['amarelo']}Não achei produto cujo nome é '{alt_quant}'\nVerifique e tente novamente.{cores['limpa']}")
+        case 5:
+           crtz=input("Tem certeza que deseja excluir?\n[S/N]: ").strip().lower()
+           if crtz=="s":
+               exc=input("Qual produto deseja excluir: ").strip().casefold()
+               achou=False
+               for produto in produtos:
+                      if produto["nome"].casefold()==exc:
+                             produtos.remove(produto)
+                             print("Produto deletado com sucesso.")
+                             achou=True
+                             break
+               if not achou:
+                      print(f"{cores['branco']}Não encontramos '{exc}' para excluir\nVerifique o nome e tente novamente.{cores['limpa']}")
+        case 6:
+           print("Ok, tchau")
+           break
